@@ -50,27 +50,28 @@ const tempWatchedData = [
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 export default function App() {
+    const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <Navbar />
-      <Main></Main>
+      <Navbar movies={movies}/>
+      <Main movies={movies}></Main>
     </>
   );
 }
-function Navbar() {
+function Navbar({movies}) {
   const [query, setQuery] = useState("");
   return (
     <nav className="nav-bar">
       <Logo />
       <Search query={query} setQuery={setQuery} />
-      <SearchResult />
+      <SearchResult movies={movies}/>
     </nav>
   );
 }
-function Main(){
+function Main({movies}){
   return(
           <main className="main">
-        <MoviesBox />
+        <MoviesBox movies={movies}/>
         <WatchedMoviesBox />
       </main>
   )
@@ -94,15 +95,15 @@ function Search({ query, setQuery }) {
     />
   );
 }
-function SearchResult() {
+function SearchResult({movies}) {
   return (
     <p className="num-results">
-      Found <strong>x</strong> results
+      Found <strong>{movies.length}</strong> results
     </p>
   );
 }
-function MoviesBox() {
-  const [movies, setMovies] = useState(tempMovieData);
+function MoviesBox({movies}) {
+
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
