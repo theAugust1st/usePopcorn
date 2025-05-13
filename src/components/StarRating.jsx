@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function StarRating({ maxLength=5,color='#fcc419' ,size=48}) {
+function StarRating({ maxLength=5,color='#fcc419' ,size=48,className,onSetRating}) {
   const [Rating, setRating] = useState(0);
   const [tempRating, setTempRating] = useState(0);
   const starDiv = {
@@ -10,15 +10,17 @@ function StarRating({ maxLength=5,color='#fcc419' ,size=48}) {
   };
   const starINRating = {
     display: "flex",
+    className:''
   };
   const rating = {
     lineHeight: "1",
     margin:"0",
     color:`${color}`,
-    size:`${size}px`
+    fontSize:`${size/1.5}px`
   };
   function handleRating(i) {
     setRating(i + 1);
+    onSetRating(i+1);
   }
   function tempRatingEnter(i) {
     setTempRating(i+1);
@@ -27,7 +29,7 @@ function StarRating({ maxLength=5,color='#fcc419' ,size=48}) {
     setTempRating(0);
   }
   return (
-    <div style={starDiv}>
+    <div style={starDiv} className={className}>
       <div style={starINRating}>
         {Array.from({ length: maxLength }, (_, i) => (
           <Star key={i} onRate={() => handleRating(i)}
