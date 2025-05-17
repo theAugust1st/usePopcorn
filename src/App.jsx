@@ -53,20 +53,23 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState("");
-  const query = "fast";
+  const query = "adsf";
   useEffect(function () {
     async function getData() {
       try {
         setIsLoading(true);
+        setErr("");
         const res = await fetch(
           `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
         );
-        if (!res.ok) throw new Error("Internet connection loss");
+        // if (res.ok)
+        //   throw new Error("Something went while fetching the data...!");
         const data = await res.json();
-        if (data.Response === "False") throw new Error("Movies not found");
+        console.log("response",data)
+        if (data.Response === "False") throw data.Error;
         setMovies(data.Search);
       } catch (err) {
-        setErr(err.message);
+        setErr(err); // ✅ ONLY a string
       } finally {
         setIsLoading(false);
       }
@@ -80,7 +83,7 @@ export default function App() {
         <SearchResult movies={movies} />
       </Navbar>
       <Main>
-        <MoviesBox movies={movies} isLoading={isLoading} />
+        <MoviesBox movies={movies} isLoading={isLoading} error={err} />
         <WatchedMoviesBox />
       </Main>
     </>
@@ -127,7 +130,7 @@ function SearchResult({ movies }) {
     </p>
   );
 }
-function MoviesBox({ movies, isLoading }) {
+function MoviesBox({ movies, isLoading, error }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -137,17 +140,24 @@ function MoviesBox({ movies, isLoading }) {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        isOpen1 && (
-          <ul className="list">
-            {movies?.map((movie) => (
-              <MoviesList key={movie.imdbID} movie={movie} />
-            ))}
-          </ul>
-        )
+      {isLoading && <Loader />}
+      {!isLoading && !error && isOpen1 && (
+        <ul className="list">
+          {movies?.map((movie) => (
+            <MoviesList key={movie.imdbID} movie={movie} />
+          ))}
+        </ul>
       )}
+      {error && <Error err={error} />}
+    </div>
+  );
+}
+function Error({ err }) {
+  console.log(err);
+  return (
+    <div className="error container">
+      <span>⛔️</span>
+      <p className="error">{err}</p>
     </div>
   );
 }
