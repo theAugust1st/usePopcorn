@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -53,7 +53,8 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState("");
-  const query = "adsf";
+  const [query, setQuery] = useState("");
+  const [selectedId,setSelectedId] =useState(null)
   useEffect(function () {
     async function getData() {
       try {
@@ -65,7 +66,6 @@ export default function App() {
         // if (res.ok)
         //   throw new Error("Something went while fetching the data...!");
         const data = await res.json();
-        console.log("response",data)
         if (data.Response === "False") throw data.Error;
         setMovies(data.Search);
       } catch (err) {
@@ -75,16 +75,22 @@ export default function App() {
       }
     }
     getData();
-  }, []);
+  }, [query]);
+  function showDetails(id){
+    setSelectedId(selectedId=> id===selectedId ? null: id)
+  }
+  function unSelectDetails(){
+    setSelectedId(null);
+  }
   return (
     <>
       <Navbar>
-        <Search />
+        <Search query={query} setQuery={setQuery}/>
         <SearchResult movies={movies} />
       </Navbar>
       <Main>
-        <MoviesBox movies={movies} isLoading={isLoading} error={err} />
-        <WatchedMoviesBox />
+        <MoviesBox movies={movies} isLoading={isLoading} error={err} selectedId={selectedId} setSelectedId={showDetails} />
+        <WatchedMoviesBox selectedId={selectedId}  unSelectDetails={unSelectDetails} />
       </Main>
     </>
   );
@@ -111,8 +117,7 @@ function Logo() {
     </div>
   );
 }
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query,setQuery}) {
   return (
     <input
       className="search"
@@ -130,7 +135,7 @@ function SearchResult({ movies }) {
     </p>
   );
 }
-function MoviesBox({ movies, isLoading, error }) {
+function MoviesBox({ movies, isLoading, error, setSelectedId,unSelectDetails }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -144,7 +149,7 @@ function MoviesBox({ movies, isLoading, error }) {
       {!isLoading && !error && isOpen1 && (
         <ul className="list">
           {movies?.map((movie) => (
-            <MoviesList key={movie.imdbID} movie={movie} />
+            <MoviesList key={movie.imdbID} movie={movie} setSelectedId={setSelectedId} unSelectDetails={unSelectDetails} />
           ))}
         </ul>
       )}
@@ -153,7 +158,6 @@ function MoviesBox({ movies, isLoading, error }) {
   );
 }
 function Error({ err }) {
-  console.log(err);
   return (
     <div className="error container">
       <span>⛔️</span>
@@ -161,8 +165,8 @@ function Error({ err }) {
     </div>
   );
 }
-function WatchedMoviesBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
+function WatchedMoviesBox({selectedId, unSelectDetails}) {
+  const [watched, setWatched] = useState([]);
   const [isOpen2, setIsOpen2] = useState(true);
 
   return (
@@ -173,13 +177,24 @@ function WatchedMoviesBox() {
       >
         {isOpen2 ? "–" : "+"}
       </button>
-      {isOpen2 && <WatchedMovies watched={watched} />}
+      {selectedId?<SelectedMovie selectedId={selectedId} unSelectDetails={unSelectDetails}/>:(isOpen2 && <WatchedMovies watched={watched} />)}
     </div>
   );
 }
-function MoviesList({ movie }) {
+function SelectedMovie({selectedId,unSelectDetails}){
   return (
-    <li>
+    <div className="details">
+      <button className="btn-back" onClick={unSelectDetails}>&larr;</button>
+      <p>{selectedId}</p>
+    </div>
+  )
+}
+function MoviesList({ movie,setSelectedId,unselectDetails }) {
+  function handleClick(){
+    console.log(movie.imdbID)
+  }
+  return (
+    <li onClick={()=>setSelectedId(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
