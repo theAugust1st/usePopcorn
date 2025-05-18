@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import StarRating from './components/StarRating.jsx'
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -157,6 +157,20 @@ function MoviesBox({ movies, isLoading, error, setSelectedId,unSelectDetails }) 
     </div>
   );
 }
+function MoviesList({ movie,setSelectedId,unselectDetails }) {
+  return (
+    <li onClick={()=>setSelectedId(movie.imdbID)}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>🗓</span>
+          <span>{movie.Year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
 function Error({ err }) {
   return (
     <div className="error container">
@@ -164,6 +178,106 @@ function Error({ err }) {
       <p className="error">{err}</p>
     </div>
   );
+}
+function SelectedMovie({selectedId,unSelectDetails}){
+  const [selectedMovie , setSelectedMovie] = useState({})
+  /*
+Object { Title: "The Fast and the Furious", Year: "2001", Rated: "PG-13", Released: "22 Jun 2001", Runtime: "106 min", Genre: "Action, Crime, Thriller", Director: "Rob Cohen", Writer: "Ken Li, Gary Scott Thompson, Erik Bergquist", Actors: "Vin Diesel, Paul Walker, Michelle Rodriguez", Plot: "Los Angeles police officer Brian O'Conner must decide where his loyalty really lies when he becomes enamored with the street racing world he has been sent undercover to end it.", … }
+​
+Actors: "Vin Diesel, Paul Walker, Michelle Rodriguez"
+​
+Awards: "11 wins & 18 nominations total"
+​
+BoxOffice: "$144,745,925"
+​
+Country: "United States, Germany"
+​
+DVD: "N/A"
+​
+Director: "Rob Cohen"
+​
+Genre: "Action, Crime, Thriller"
+​
+Language: "English, Spanish"
+​
+Metascore: "58"
+​
+Plot: "Los Angeles police officer Brian O'Conner must decide where his loyalty really lies when he becomes enamored with the street racing world he has been sent undercover to end it."
+​
+Poster: "https://m.media-amazon.com/images/M/MV5BZGRiMDE1NTMtMThmZS00YjE4LWI1ODQtNjRkZGZlOTg2MGE1XkEyXkFqcGc@._V1_SX300.jpg"
+​
+Production: "N/A"
+​
+Rated: "PG-13"
+​
+Ratings: Array(3) [ {…}, {…}, {…} ]
+​
+Released: "22 Jun 2001"
+​
+Response: "True"
+​
+Runtime: "106 min"
+​
+Title: "The Fast and the Furious"
+​
+Type: "movie"
+​
+Website: "N/A"
+​
+Writer: "Ken Li, Gary Scott Thompson, Erik Bergquist"
+​
+Year: "2001"
+​
+imdbID: "tt0232500"
+​
+imdbRating: "6.8"
+​
+imdbVotes: "436,588"
+*/
+  const {
+    Title:title,
+    Year : year,
+    Poster: poster,
+    Runtime : runtime,
+    imdbRating,
+    imdbVotes,
+    Genre: genre,
+    Director: director,
+    Actors: actors,
+    Released:released,
+    Plot: plot,
+  } = selectedMovie;
+  useEffect(function (){
+    async function getMovieDetails(){
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`)
+      const data = await res.json();
+      setSelectedMovie(data)
+    }
+    getMovieDetails()
+  },[selectedId])
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={unSelectDetails}>&larr;</button>
+      <img src={poster} alt="movie-poster" />
+      <div className="details-overview">
+        <h2>{title}</h2>
+        <p>{released} &bull; {runtime}</p>
+        <p>
+          <span>⭐️</span>
+          {imdbRating}</p>
+      </div>
+      <div className="rating">
+      <StarRating maxLength={10} size={24} />
+      </div>
+      <div>
+        <section>
+          <p><em>{plot}</em></p>
+          <p>Starring cast:{actors}</p>
+          <p>{director}</p>
+        </section>
+        </div>
+    </div>
+  )
 }
 function WatchedMoviesBox({selectedId, unSelectDetails}) {
   const [watched, setWatched] = useState([]);
@@ -179,31 +293,6 @@ function WatchedMoviesBox({selectedId, unSelectDetails}) {
       </button>
       {selectedId?<SelectedMovie selectedId={selectedId} unSelectDetails={unSelectDetails}/>:(isOpen2 && <WatchedMovies watched={watched} />)}
     </div>
-  );
-}
-function SelectedMovie({selectedId,unSelectDetails}){
-  return (
-    <div className="details">
-      <button className="btn-back" onClick={unSelectDetails}>&larr;</button>
-      <p>{selectedId}</p>
-    </div>
-  )
-}
-function MoviesList({ movie,setSelectedId,unselectDetails }) {
-  function handleClick(){
-    console.log(movie.imdbID)
-  }
-  return (
-    <li onClick={()=>setSelectedId(movie.imdbID)}>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <p>
-          <span>🗓</span>
-          <span>{movie.Year}</span>
-        </p>
-      </div>
-    </li>
   );
 }
 function WatchedMovies({ watched }) {

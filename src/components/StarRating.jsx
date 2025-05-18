@@ -45,8 +45,8 @@ function StarRating({ maxLength=5,color='#fcc419' ,size=48,className,onSetRating
 }
 function Star({ onRate, full, onEnter, onLeave,color,size }) {
   const star = {
-    width: "48px",
-    height: "48px",
+    width: `${size}px`,
+    height:  `${size}px`,
     display: "block",
     cursor:"pointer",
     color:`${color}`,
