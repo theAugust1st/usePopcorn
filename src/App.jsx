@@ -48,6 +48,7 @@ const tempWatchedData = [
 ];
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+const KEY = "b19e0c97";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -237,6 +238,11 @@ function SelectedMovie({ selectedId, unSelectDetails, setWatched, watched }) {
     },
     [selectedId]
   );
+  useEffect(function (){
+    if (!title) return ;
+    document.title = `Movie | ${title}`
+    return () => document.title = 'usePopcorn'
+  },[title])
   function handleAdd(selectedId) {
     setRating();
     const watchedList = {
