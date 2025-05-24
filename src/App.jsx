@@ -298,8 +298,13 @@ function SelectedMovie({ selectedId, unSelectDetails, setWatched, watched }) {
   );
 }
 function WatchedMoviesBox({ selectedId, unSelectDetails }) {
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(()=>
+    JSON.parse(localStorage.getItem("Movie"))
+  );
   const [isOpen2, setIsOpen2] = useState(true);
+    useEffect(()=>{
+    localStorage.setItem("Movie",JSON.stringify(watched))
+  },[watched])
   return (
     <div className="box">
       <button
