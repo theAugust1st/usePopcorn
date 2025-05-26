@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import StarRating from "./components/StarRating.jsx";
 import { useFetchCustom } from "./components/useFetchCustom.js";
+import { useLocalStorageState } from "./components/useLocalStorageState.js";
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -275,13 +276,8 @@ function SelectedMovie({ selectedId, unSelectDetails, setWatched, watched }) {
   );
 }
 function WatchedMoviesBox({ selectedId, unSelectDetails }) {
-  const [watched, setWatched] = useState(() =>
-    JSON.parse(localStorage.getItem("Movie"))
-  );
+  const [watched,setWatched] = useLocalStorageState([],"Movie")
   const [isOpen2, setIsOpen2] = useState(true);
-  useEffect(() => {
-    localStorage.setItem("Movie", JSON.stringify(watched));
-  }, [watched]);
   return (
     <div className="box">
       <button
