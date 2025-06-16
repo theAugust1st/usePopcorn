@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import StarRating from "./components/StarRating.jsx";
 import { useFetchCustom } from "./components/useFetchCustom.js";
 import { useLocalStorageState } from "./components/useLocalStorageState.js";
@@ -204,7 +204,7 @@ function SelectedMovie({ selectedId, unSelectDetails, setWatched, watched }) {
     function () {
       async function getMovieDetails() {
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+          `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
         );
         const data = await res.json();
         setSelectedMovie(data);
@@ -221,6 +221,10 @@ function SelectedMovie({ selectedId, unSelectDetails, setWatched, watched }) {
     },
     [title]
   );
+  useEffect(function (){
+
+    document.addEventListener("Escape",()=>unSelectDetails())
+  },[])
   function handleAdd(selectedId) {
     setRating();
     const watchedList = {
